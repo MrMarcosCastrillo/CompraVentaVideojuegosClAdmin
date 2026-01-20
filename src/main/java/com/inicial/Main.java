@@ -61,30 +61,36 @@ public class Main {
 	}
 
 	private static boolean login() {
-		Scanner sc = new Scanner(System.in);
-		boolean correcto = false;
+	    Scanner sc = new Scanner(System.in);
 
-		try {
-			System.out.print("Usuario admin: ");
-			String user = sc.nextLine();
-			System.out.print("Password: ");
-			String pwd = sc.nextLine();
+	    try {
+	        System.out.print("Usuario admin: ");
+	        String user = sc.nextLine();
+	        System.out.print("Password: ");
+	        String pwd = sc.nextLine();
 
-			String json = ApiCliente.get("/login/" + user + "/" + pwd);
+	        String json = ApiCliente.get("/login/" + user + "/" + pwd);
 
-			if (!json.equals("null")) {
-				Usuario u = mapper.readValue(json, Usuario.class);
-				idAdmin = u.getId();
-				System.out.println("Login correcto: " + u.getNombre());
-				correcto = true;
-			} else {
-				System.out.println("Login incorrecto, prueba de nuevo");
-			}
-		} catch (Exception e) {
-			System.out.println("Error al hacer login: " + e.getMessage());
-		}
+	        if (json.equals("null")) {
+	            System.out.println("Login incorrecto");
+	            return false;
+	        }
 
-		return correcto;
+	        Usuario u = mapper.readValue(json, Usuario.class);
+
+	        if (!u.isAdmin()) {
+	            System.out.println("Acceso denegado: no eres administrador");
+	            return false;
+	        }
+
+	        idAdmin = u.getId();
+	        System.out.println("Login correcto");
+	        return true;
+
+	    } catch (Exception e) {
+	        System.out.println("Error al hacer login: " + e.getMessage());
+	        return false;
+	    }
 	}
 
 	private static void submenuPendientes() {
