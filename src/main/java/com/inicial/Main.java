@@ -1,6 +1,6 @@
 package com.inicial;
 
-
+import java.net.ConnectException;
 import java.net.URLEncoder;
 import java.util.List;
 import java.util.Scanner;
@@ -59,46 +59,50 @@ public class Main {
 				sc.nextLine();
 			}
 		}
-		
+
 		sc.close();
 	}
 
 	private static boolean login() {
-	    try {
-	        System.out.print("Usuario admin: ");
-	        String user = sc.nextLine();
-	        System.out.print("Password: ");
-	        String pwd = sc.nextLine();
+		try {
+			System.out.print("Usuario admin: ");
+			String user = URLEncoder.encode(sc.nextLine(), "UTF-8");
+			System.out.print("Password: ");
+			String pwd = URLEncoder.encode(sc.nextLine(), "UTF-8");
 
-	        String json = ApiCliente.get("/login/" + user + "/" + pwd);
+			String json = ApiCliente.get("/login/" + user + "/" + pwd);
 
-	        if (json == null || json.isBlank() || json.equals("null")) {
-	            System.out.println("Login incorrecto");
-	            return false;
-	        }
+			if (json == null || json.isBlank() || json.equals("null")) {
+				System.out.println("Login incorrecto");
+				return false;
+			}
 
-	        Usuario u = mapper.readValue(json, Usuario.class);
+			Usuario u = mapper.readValue(json, Usuario.class);
 
-	        if (!u.isAdmin()) {
-	            System.out.println("Acceso denegado: no eres administrador");
-	            return false;
-	        }
+			if (!u.isAdmin()) {
+				System.out.println("Acceso denegado: no eres administrador");
+				return false;
+			}
 
-	        idAdmin = u.getId();
-	        System.out.println("Login correcto");
-	        return true;
+			idAdmin = u.getId();
+			System.out.println("Login correcto");
+			return true;
 
-	    } catch (Exception e) {
-	        System.out.println("Error al hacer login");
-	        e.printStackTrace();
-	        return false;
-	    }
+		} catch (ConnectException e) {
+			System.out.println("Error de conexión con el servidor");
+			return false;
+		} catch (Exception e) {
+			System.out.println("Error al hacer login");
+			e.printStackTrace();
+			return false;
+		}
 	}
 
 	private static void submenuPendientes() {
 		try {
 			String json = ApiCliente.get("/juegosPendientes");
-			List<Juego> juegos = mapper.readValue(json, new TypeReference<List<Juego>>() {});
+			List<Juego> juegos = mapper.readValue(json, new TypeReference<List<Juego>>() {
+			});
 
 			boolean volver = false;
 
@@ -129,17 +133,17 @@ public class Main {
 							if (sc.hasNextLong()) {
 								Long idJuego = sc.nextLong();
 								sc.nextLine();
-								
+
 								if (!existeJuegoPorId(juegos, idJuego)) {
-								    System.out.println("No existe ningún juego con ese id");
-								}
-								else {
-									if (Boolean.parseBoolean(ApiCliente.get("/aprobarJuego/" + idJuego + "/" + idAdmin))) {
+									System.out.println("No existe ningún juego con ese id");
+								} else {
+									if (Boolean
+											.parseBoolean(ApiCliente.get("/aprobarJuego/" + idJuego + "/" + idAdmin))) {
 										System.out.println("Juego aprobado con exito");
 										json = ApiCliente.get("/juegosPendientes");
-										juegos = mapper.readValue(json, new TypeReference<List<Juego>>() {});
-									}
-									else {
+										juegos = mapper.readValue(json, new TypeReference<List<Juego>>() {
+										});
+									} else {
 										System.out.println("No se pudo aprobar el juego");
 									}
 								}
@@ -153,17 +157,17 @@ public class Main {
 							if (sc.hasNextLong()) {
 								Long idJuego = sc.nextLong();
 								sc.nextLine();
-								
+
 								if (!existeJuegoPorId(juegos, idJuego)) {
-								    System.out.println("No existe ningún juego con ese id");
-								}
-								else {
-									if (Boolean.parseBoolean(ApiCliente.get("/rechazarJuego/" + idJuego + "/" + idAdmin))) {
+									System.out.println("No existe ningún juego con ese id");
+								} else {
+									if (Boolean.parseBoolean(
+											ApiCliente.get("/rechazarJuego/" + idJuego + "/" + idAdmin))) {
 										System.out.println("Juego rechazado con exito");
 										json = ApiCliente.get("/juegosPendientes");
-										juegos = mapper.readValue(json, new TypeReference<List<Juego>>() {});
-									}
-									else {
+										juegos = mapper.readValue(json, new TypeReference<List<Juego>>() {
+										});
+									} else {
 										System.out.println("No se pudo rechazar el juego");
 									}
 								}
@@ -183,6 +187,8 @@ public class Main {
 				}
 			}
 
+		} catch (ConnectException e) {
+			System.out.println("Error de conexión con el servidor");
 		} catch (Exception e) {
 			System.out.println("Error en la gestión de juegos pendientes");
 			e.printStackTrace();
@@ -222,19 +228,19 @@ public class Main {
 							if (sc.hasNextLong()) {
 								Long idJuego = sc.nextLong();
 								sc.nextLine();
-								
+
 								if (!existeJuegoPorId(juegos, idJuego)) {
-								    System.out.println("No existe ningún juego con ese id");
-								}
-								else {
+									System.out.println("No existe ningún juego con ese id");
+								} else {
 									Long ID_TIENDA = 1L; // id que conocemos nosotros de la tienda
-									
-									if (Boolean.parseBoolean(ApiCliente.get("/borrarJuego/" + idJuego + "/" + ID_TIENDA))) {
+
+									if (Boolean.parseBoolean(
+											ApiCliente.get("/borrarJuego/" + idJuego + "/" + ID_TIENDA))) {
 										System.out.println("Juego borrado con exito");
 										json = ApiCliente.get("/juegos");
-										juegos = mapper.readValue(json, new TypeReference<List<Juego>>() {});
-									}
-									else {
+										juegos = mapper.readValue(json, new TypeReference<List<Juego>>() {
+										});
+									} else {
 										System.out.println("No se pudo borrar el juego");
 									}
 								}
@@ -253,6 +259,8 @@ public class Main {
 					}
 				}
 			}
+		} catch (ConnectException e) {
+			System.out.println("Error de conexión con el servidor");
 		} catch (Exception e) {
 			System.out.println("Error en la gestión de juegos aprobados");
 			e.printStackTrace();
@@ -262,36 +270,46 @@ public class Main {
 	private static void subirJuegoTienda() {
 		try {
 			System.out.print("Nombre: ");
-			String nombre = URLEncoder.encode(sc.nextLine(), "UTF-8");;
+			String nombre = URLEncoder.encode(sc.nextLine(), "UTF-8");
 			System.out.print("Imagen: ");
-			String imagen = sc.nextLine();
+			String imagen = URLEncoder.encode(sc.nextLine(), "UTF-8");
 			System.out.print("Precio: ");
-			double precio = sc.nextDouble();
-			sc.nextLine();
+			
+			if (sc.hasNextLong()) {
+				double precio = sc.nextDouble();
+				sc.nextLine();
+				
+				Long ID_TIENDA = 1L; // id que conocemos nosotros de la tienda
 
-			Long ID_TIENDA = 1L; // id que conocemos nosotros de la tienda
-
-			if (Boolean.parseBoolean(ApiCliente.get("/subirJuego/" + ID_TIENDA + "/" + nombre + "/" + imagen + "/" + precio ))){
-				System.out.println("Juego subido con exito");
+				if (Boolean.parseBoolean(
+						ApiCliente.get("/subirJuego/" + ID_TIENDA + "/" + nombre + "/" + imagen + "/" + precio))) {
+					System.out.println("Juego subido con exito");
+				} else {
+					System.out.println("No se pudo subir el juego");
+				}
 			}
 			else {
-				System.out.println("No se pudo subir el juego");
-			}
 
+				System.out.println("Precio no válido");
+				sc.nextLine();
+
+			}
+		} catch (ConnectException e) {
+			System.out.println("Error de conexión con el servidor");
 		} catch (Exception e) {
-			System.out.println("Error al subir un juego ");
+			System.out.println("Error al subir un juego");
 			e.printStackTrace();
 		}
 	}
-	
+
 	// Metodo compartido para comprobar el id en una lista de juegos
-	
+
 	private static boolean existeJuegoPorId(List<Juego> juegos, Long id) {
-	    for (Juego j : juegos) {
-	        if (j.getId().equals(id)) {
-	            return true;
-	        }
-	    }
-	    return false;
+		for (Juego j : juegos) {
+			if (j.getId().equals(id)) {
+				return true;
+			}
+		}
+		return false;
 	}
 }
