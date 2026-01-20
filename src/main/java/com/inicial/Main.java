@@ -1,5 +1,7 @@
 package com.inicial;
 
+
+import java.net.URLEncoder;
 import java.util.List;
 import java.util.Scanner;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -57,6 +59,8 @@ public class Main {
 				sc.nextLine();
 			}
 		}
+		
+		sc.close();
 	}
 
 	private static boolean login() {
@@ -258,7 +262,7 @@ public class Main {
 	private static void subirJuegoTienda() {
 		try {
 			System.out.print("Nombre: ");
-			String nombre = sc.nextLine();
+			String nombre = URLEncoder.encode(sc.nextLine(), "UTF-8");;
 			System.out.print("Imagen: ");
 			String imagen = sc.nextLine();
 			System.out.print("Precio: ");
