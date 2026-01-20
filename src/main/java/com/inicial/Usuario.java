@@ -30,6 +30,6 @@ public class Usuario implements Serializable {
     
     @Override
     public String toString() {
-        return nombre + " (" + saldo + " €)";
+        return "nombre" + nombre + " (" + saldo + " €)";
     }
 }

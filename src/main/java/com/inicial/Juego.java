@@ -30,6 +30,6 @@ public class Juego implements Serializable {
 
     @Override
     public String toString() {
-        return id + " - " + nombre + " (" + precio + " €)";
+        return "Id: " + id + " - " + nombre + " (" + precio + " €)";
     }
 }

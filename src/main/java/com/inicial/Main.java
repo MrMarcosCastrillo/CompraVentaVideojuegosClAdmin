@@ -7,12 +7,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Main {
 
+	private static Scanner sc = new Scanner(System.in);
 	private static ObjectMapper mapper = new ObjectMapper();
-	private static Long idAdmin = null;
+	private static Long idAdmin;
 
 	public static void main(String[] args) {
-
-		Scanner sc = new Scanner(System.in);
 		boolean logueado = false;
 
 		// Bucle de login hasta que sea correcto
@@ -61,8 +60,6 @@ public class Main {
 	}
 
 	private static boolean login() {
-	    Scanner sc = new Scanner(System.in);
-
 	    try {
 	        System.out.print("Usuario admin: ");
 	        String user = sc.nextLine();
@@ -71,7 +68,7 @@ public class Main {
 
 	        String json = ApiCliente.get("/login/" + user + "/" + pwd);
 
-	        if (json.equals("null")) {
+	        if (json == null || json.isBlank() || json.equals("null")) {
 	            System.out.println("Login incorrecto");
 	            return false;
 	        }
@@ -88,18 +85,16 @@ public class Main {
 	        return true;
 
 	    } catch (Exception e) {
-	        System.out.println("Error al hacer login: " + e.getMessage());
+	        System.out.println("Error al hacer login");
+	        e.printStackTrace();
 	        return false;
 	    }
 	}
 
 	private static void submenuPendientes() {
-		Scanner sc = new Scanner(System.in);
-
 		try {
 			String json = ApiCliente.get("/juegosPendientes");
-			List<Juego> juegos = mapper.readValue(json, new TypeReference<List<Juego>>() {
-			});
+			List<Juego> juegos = mapper.readValue(json, new TypeReference<List<Juego>>() {});
 
 			boolean volver = false;
 
@@ -130,7 +125,20 @@ public class Main {
 							if (sc.hasNextLong()) {
 								Long idJuego = sc.nextLong();
 								sc.nextLine();
-								System.out.println(ApiCliente.get("/aprobarJuego/" + idJuego + "/" + idAdmin));
+								
+								if (!existeJuegoPorId(juegos, idJuego)) {
+								    System.out.println("No existe ningún juego con ese id");
+								}
+								else {
+									if (Boolean.parseBoolean(ApiCliente.get("/aprobarJuego/" + idJuego + "/" + idAdmin))) {
+										System.out.println("Juego aprobado con exito");
+										json = ApiCliente.get("/juegosPendientes");
+										juegos = mapper.readValue(json, new TypeReference<List<Juego>>() {});
+									}
+									else {
+										System.out.println("No se pudo aprobar el juego");
+									}
+								}
 							} else {
 								System.out.println("ID no válido");
 								sc.nextLine();
@@ -141,7 +149,20 @@ public class Main {
 							if (sc.hasNextLong()) {
 								Long idJuego = sc.nextLong();
 								sc.nextLine();
-								System.out.println(ApiCliente.get("/rechazarJuego/" + idJuego + "/" + idAdmin));
+								
+								if (!existeJuegoPorId(juegos, idJuego)) {
+								    System.out.println("No existe ningún juego con ese id");
+								}
+								else {
+									if (Boolean.parseBoolean(ApiCliente.get("/rechazarJuego/" + idJuego + "/" + idAdmin))) {
+										System.out.println("Juego rechazado con exito");
+										json = ApiCliente.get("/juegosPendientes");
+										juegos = mapper.readValue(json, new TypeReference<List<Juego>>() {});
+									}
+									else {
+										System.out.println("No se pudo rechazar el juego");
+									}
+								}
 							} else {
 								System.out.println("ID no válido");
 								sc.nextLine();
@@ -165,8 +186,6 @@ public class Main {
 	}
 
 	private static void submenuAprobados() {
-		Scanner sc = new Scanner(System.in);
-
 		boolean volver = false;
 		try {
 			String json = ApiCliente.get("/juegos");
@@ -199,10 +218,22 @@ public class Main {
 							if (sc.hasNextLong()) {
 								Long idJuego = sc.nextLong();
 								sc.nextLine();
-
-								Long ID_TIENDA = 1L; // id que conocemos nosotros de la tienda
-
-								System.out.println(ApiCliente.get("/borrarJuego/" + idJuego + "/" + ID_TIENDA));
+								
+								if (!existeJuegoPorId(juegos, idJuego)) {
+								    System.out.println("No existe ningún juego con ese id");
+								}
+								else {
+									Long ID_TIENDA = 1L; // id que conocemos nosotros de la tienda
+									
+									if (Boolean.parseBoolean(ApiCliente.get("/borrarJuego/" + idJuego + "/" + ID_TIENDA))) {
+										System.out.println("Juego borrado con exito");
+										json = ApiCliente.get("/juegos");
+										juegos = mapper.readValue(json, new TypeReference<List<Juego>>() {});
+									}
+									else {
+										System.out.println("No se pudo borrar el juego");
+									}
+								}
 							} else {
 								System.out.println("ID no válido");
 								sc.nextLine();
@@ -219,12 +250,12 @@ public class Main {
 				}
 			}
 		} catch (Exception e) {
-			System.out.println("Error al ver los juegos aprobados: " + e.getMessage());
+			System.out.println("Error en la gestión de juegos aprobados");
+			e.printStackTrace();
 		}
 	}
 
 	private static void subirJuegoTienda() {
-		Scanner sc = new Scanner(System.in);
 		try {
 			System.out.print("Nombre: ");
 			String nombre = sc.nextLine();
@@ -233,16 +264,30 @@ public class Main {
 			System.out.print("Precio: ");
 			double precio = sc.nextDouble();
 			sc.nextLine();
-			System.out.print("Clave: ");
-			String clave = sc.nextLine();
 
 			Long ID_TIENDA = 1L; // id que conocemos nosotros de la tienda
 
-			System.out.println(ApiCliente
-					.get("/subirJuego/" + ID_TIENDA + "/" + nombre + "/" + imagen + "/" + precio + "/" + clave));
+			if (Boolean.parseBoolean(ApiCliente.get("/subirJuego/" + ID_TIENDA + "/" + nombre + "/" + imagen + "/" + precio ))){
+				System.out.println("Juego subido con exito");
+			}
+			else {
+				System.out.println("No se pudo subir el juego");
+			}
 
 		} catch (Exception e) {
-			System.out.println("Error al subir un juego: " + e.getMessage());
+			System.out.println("Error al subir un juego ");
+			e.printStackTrace();
 		}
+	}
+	
+	// Metodo compartido para comprobar el id en una lista de juegos
+	
+	private static boolean existeJuegoPorId(List<Juego> juegos, Long id) {
+	    for (Juego j : juegos) {
+	        if (j.getId().equals(id)) {
+	            return true;
+	        }
+	    }
+	    return false;
 	}
 }
