@@ -8,6 +8,7 @@ public class Usuario implements Serializable {
     private Long id;
     private String nombre;
     private BigDecimal saldo;
+    private boolean admin;
 
     public Usuario() {}
 
@@ -23,6 +24,10 @@ public class Usuario implements Serializable {
         return saldo;
     }
 
+    public boolean isAdmin() {
+        return admin;
+    }
+    
     @Override
     public String toString() {
         return nombre + " (" + saldo + " €)";
