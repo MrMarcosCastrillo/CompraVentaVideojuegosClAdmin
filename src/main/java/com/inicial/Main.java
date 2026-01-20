@@ -47,7 +47,7 @@ public class Main {
 					subirJuegoTienda();
 					break;
 				case 0:
-					System.out.println("Saliendo del menú...");
+					System.out.println("Saliendo del menú");
 					salir = true;
 					break;
 				default:
@@ -241,7 +241,7 @@ public class Main {
 										juegos = mapper.readValue(json, new TypeReference<List<Juego>>() {
 										});
 									} else {
-										System.out.println("No se pudo borrar el juego");
+										System.out.println("El juego no fue subido por la tienda");
 									}
 								}
 							} else {
@@ -274,11 +274,11 @@ public class Main {
 			System.out.print("Imagen: ");
 			String imagen = URLEncoder.encode(sc.nextLine(), "UTF-8");
 			System.out.print("Precio: ");
-			
+
 			if (sc.hasNextLong()) {
 				double precio = sc.nextDouble();
 				sc.nextLine();
-				
+
 				Long ID_TIENDA = 1L; // id que conocemos nosotros de la tienda
 
 				if (Boolean.parseBoolean(
@@ -287,8 +287,7 @@ public class Main {
 				} else {
 					System.out.println("No se pudo subir el juego");
 				}
-			}
-			else {
+			} else {
 
 				System.out.println("Precio no válido");
 				sc.nextLine();
