@@ -66,9 +66,9 @@ public class Main {
 	private static boolean login() {
 		try {
 			System.out.print("Usuario admin: ");
-			String user = URLEncoder.encode(sc.nextLine(), "UTF-8");
+			String user = URLEncoder.encode(sc.nextLine(), "UTF-8").replace("+", "%20");
 			System.out.print("Password: ");
-			String pwd = URLEncoder.encode(sc.nextLine(), "UTF-8");
+			String pwd = URLEncoder.encode(sc.nextLine(), "UTF-8").replace("+", "%20");
 
 			String json = ApiCliente.get("/login/" + user + "/" + pwd);
 
@@ -270,12 +270,12 @@ public class Main {
 	private static void subirJuegoTienda() {
 		try {
 			System.out.print("Nombre: ");
-			String nombre = URLEncoder.encode(sc.nextLine(), "UTF-8");
+			String nombre = URLEncoder.encode(sc.nextLine(), "UTF-8").replace("+", "%20");
 			System.out.print("Imagen: ");
-			String imagen = URLEncoder.encode(sc.nextLine(), "UTF-8");
+			String imagen = URLEncoder.encode(sc.nextLine(), "UTF-8").replace("+", "%20");
 			System.out.print("Precio: ");
 
-			if (sc.hasNextLong()) {
+			if (sc.hasNextDouble()) {
 				double precio = sc.nextDouble();
 				sc.nextLine();
 
