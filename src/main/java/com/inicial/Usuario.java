@@ -7,8 +7,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 //Pojo de Usuario
 
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class Usuario implements Serializable {
+@JsonIgnoreProperties(ignoreUnknown = true) //Ignora los campos del JSON recibido del server si no los tiene
+public class Usuario implements Serializable { //Sirve para poder convertir el objeto en bytes para guardar como JSON (no lo usamos pero por si acaso)
 
     private Long id;
     private String nombre;

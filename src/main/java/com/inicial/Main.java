@@ -10,13 +10,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class Main {
 
 	private static Scanner sc = new Scanner(System.in);
-	private static ObjectMapper mapper = new ObjectMapper();
-	private static Long idAdmin;
+	private static ObjectMapper mapper = new ObjectMapper(); //Para mapear los JSON
+	private static Long idAdmin; //Para guardar ID del admin logueado
 
 	public static void main(String[] args) {
 		boolean logueado = false;
 
-		// Bucle de login hasta que sea correcto
+		//Bucle de login hasta que sea correcto
 		while (!logueado) {
 			logueado = login();
 		}
@@ -24,7 +24,7 @@ public class Main {
 		int opcion = -1;
 		boolean salir = false;
 
-		// Bucle menú
+		//Bucle menú
 		while (!salir) {
 			System.out.println("\n--- MENÚ ADMIN ---");
 			System.out.println("1. Gestión de juegos pendientes");
@@ -66,17 +66,20 @@ public class Main {
 	private static boolean login() {
 		try {
 			System.out.print("Usuario admin: ");
-			String user = URLEncoder.encode(sc.nextLine(), "UTF-8").replace("+", "%20");
+			String user = URLEncoder.encode(sc.nextLine(), "UTF-8").replace("+", "%20"); //UTF_8 para convertir los signos que den conflicto al enviarse los enlaces
 			System.out.print("Password: ");
 			String pwd = URLEncoder.encode(sc.nextLine(), "UTF-8").replace("+", "%20");
 
+			//Llamada a endpoint /login
 			String json = ApiCliente.get("/login/" + user + "/" + pwd);
 
+			//Comprobar si devuelve null o vacío
 			if (json == null || json.isBlank() || json.equals("null")) {
 				System.out.println("Login incorrecto");
 				return false;
 			}
 
+			//Convertir JSON a objeto Usuario
 			Usuario u = mapper.readValue(json, Usuario.class);
 
 			if (!u.isAdmin()) {
@@ -100,8 +103,8 @@ public class Main {
 
 	private static void submenuPendientes() {
 		try {
-			String json = ApiCliente.get("/juegosPendientes");
-			List<Juego> juegos = mapper.readValue(json, new TypeReference<List<Juego>>() {
+			String json = ApiCliente.get("/juegosPendientes"); //Almacena en un string el json devuelto por el servidor que es una lista de los juegos
+			List<Juego> juegos = mapper.readValue(json, new TypeReference<List<Juego>>() { //Almacena los juegos mapeados en una lista
 			});
 
 			boolean volver = false;
@@ -137,7 +140,9 @@ public class Main {
 								if (!existeJuegoPorId(juegos, idJuego)) {
 									System.out.println("No existe ningún juego con ese id");
 								} else {
-									if (Boolean
+									//Parsea la respuesta que se convirtió a string del método get de ApiCliente a boolean
+									//El endpoint es un booleano en el servidor
+									if (Boolean 
 											.parseBoolean(ApiCliente.get("/aprobarJuego/" + idJuego + "/" + idAdmin))) {
 										System.out.println("Juego aprobado con exito");
 										json = ApiCliente.get("/juegosPendientes");
@@ -266,6 +271,7 @@ public class Main {
 		}
 	}
 
+	//Manejo los datos introducidos aunque el endpoint también maneja la seguridad de los datos introducidos por dentro
 	private static void subirJuegoTienda() {
 		try {
 			System.out.print("Nombre: ");
