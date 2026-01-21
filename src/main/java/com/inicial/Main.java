@@ -1,6 +1,7 @@
 package com.inicial;
 
 import java.net.ConnectException;
+import java.net.URLEncoder;
 import java.util.List;
 import java.util.Scanner;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -65,9 +66,9 @@ public class Main {
 	private static boolean login() {
 		try {
 			System.out.print("Usuario admin: ");
-			String user = sc.nextLine().trim().replace(" ", "%20");
+			String user = URLEncoder.encode(sc.nextLine(), "UTF-8").replace("+", "%20");
 			System.out.print("Password: ");
-			String pwd = sc.nextLine().trim().replace(" ", "%20");
+			String pwd = URLEncoder.encode(sc.nextLine(), "UTF-8").replace("+", "%20");
 
 			String json = ApiCliente.get("/login/" + user + "/" + pwd);
 
@@ -268,10 +269,10 @@ public class Main {
 	private static void subirJuegoTienda() {
 		try {
 			System.out.print("Nombre: ");
-			String nombre = sc.nextLine().trim().replace(" ", "%20");
+			String nombre = URLEncoder.encode(sc.nextLine(), "UTF-8").replace("+", "%20");
 			System.out.print("Imagen: ");
-			String imagen = sc.nextLine().trim().replace(" ", "%20").replace("/", "🗿");
-			System.out.println(imagen);
+			String imagen = URLEncoder.encode(sc.nextLine().replace("/", "🗿"), "UTF-8").replace("+", "%20");
+			System.out.print("Precio: ");
 
 			if (sc.hasNextDouble()) {
 				double precio = sc.nextDouble();
