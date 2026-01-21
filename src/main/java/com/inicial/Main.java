@@ -186,7 +186,6 @@ public class Main {
 					}
 				}
 			}
-
 		} catch (ConnectException e) {
 			System.out.println("Error de conexión con el servidor");
 		} catch (Exception e) {
@@ -270,9 +269,10 @@ public class Main {
 	private static void subirJuegoTienda() {
 		try {
 			System.out.print("Nombre: ");
-			String nombre = URLEncoder.encode(sc.nextLine(), "UTF-8").replace("+", "%20");
+			String nombre = sc.nextLine().trim().replace(" ", "%20");
 			System.out.print("Imagen: ");
-			String imagen = URLEncoder.encode(sc.nextLine(), "UTF-8").replace("+", "%20");
+			String imagen = sc.nextLine().trim().replace(" ", "%20").replace("/", "🗿");
+			System.out.println(imagen);
 			System.out.print("Precio: ");
 
 			if (sc.hasNextDouble()) {
@@ -281,17 +281,19 @@ public class Main {
 
 				Long ID_TIENDA = 1L; // id que conocemos nosotros de la tienda
 
-				if (Boolean.parseBoolean(
-						ApiCliente.get("/subirJuego/" + ID_TIENDA + "/" + nombre + "/" + imagen + "/" + precio))) {
-					System.out.println("Juego subido con exito");
+				if (precio >= 0) {
+					if (Boolean.parseBoolean(
+							ApiCliente.get("/subirJuego/" + ID_TIENDA + "/" + nombre + "/" + imagen + "/" + precio))) {
+						System.out.println("Juego subido con exito");
+					} else {
+						System.out.println("No se pudo subir el juego");
+					}
 				} else {
-					System.out.println("No se pudo subir el juego");
+					System.out.println("El precio no puede ser igual o menor que 0");
 				}
 			} else {
-
 				System.out.println("Precio no válido");
 				sc.nextLine();
-
 			}
 		} catch (ConnectException e) {
 			System.out.println("Error de conexión con el servidor");

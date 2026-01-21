@@ -5,6 +5,8 @@ import java.math.BigDecimal;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+//Pojo de Usuario
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Usuario implements Serializable {
 
